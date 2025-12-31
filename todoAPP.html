@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shellah's To-Do List</title>
+
+ <!--MY-CSS-->
+ <style>
+
+/* Colors for light/dark mode */
+/* Light/Dark Theme Colors */
+:root {
+  --bg-color: #f2f2f2;
+  --text-color: #333;
+  --card-bg: #fff;
+  --input-bg: #fff;
+  --btn-bg: #28a745;
+  --btn-hover: #218838;
+  --delete-bg: #dc3545;
+  --delete-hover: #c82333;
+}
+
+body.dark {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1f1f1f;
+  --input-bg: #2c2c2c;
+  --btn-bg: #0d6efd;
+  --btn-hover: #0b5ed7;
+  --delete-bg: #dc3545;
+  --delete-hover: #c82333;
+}
+
+/* General Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+  background-color: var(--card-bg);
+  padding: 25px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* the header effects */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  flex: 1;
+  font-size: 24px;
+  color: var(--text-color);
+  margin: 0;
+}
+
+#theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+#theme-toggle img.theme-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+#theme-toggle:hover img.theme-icon {
+  transform: rotate(20deg);
+}
+
+/* input effects */
+.input-section {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+#task-input, #priority-select {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#task-input { flex: 2; min-width: 100px; }
+#priority-select { flex: 1; min-width: 90px; }
+
+#add-task-btn {
+  padding: 12px 15px;
+  background-color: var(--btn-bg);
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  min-width: 80px;
+}
+
+#add-task-btn:hover { background-color: var(--btn-hover); }
+
+#task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Task Item Styles */
+#task-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  margin-bottom: 12px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.3s forwards;
+  transition: background-color 0.3s ease, color 0.3s ease, border-left 0.3s ease;
+  border-left: 6px solid transparent;
+}
+
+#task-list li span { flex: 1; margin-left: 10px; }
+
+/* Priority colors */
+#task-list li.low { border-left-color: #28a745; }
+#task-list li.medium { border-left-color: #ffc107; }
+#task-list li.high { border-left-color: #dc3545; }
+
+#task-list li.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.delete-btn {
+  background-color: var(--delete-bg);
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.delete-btn:hover { background-color: var(--delete-hover); }
+
+#task-list li input[type="checkbox"] {
+  transform: scale(1.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .input-section { flex-direction: column; gap: 10px; }
+  #add-task-btn, #priority-select, #task-input { width: 100%; }
+}
+
+
+
+ </style>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+        <h1>Shellah's To-Do List</h1>
+        <button id="theme-toggle">
+            <img src="Images/to-do-list.png" alt="Toggle Theme" class="theme-icon"/>
+        </button>
+    </div>
+
+    
+    <div class="input-section">
+      <input type="text" id="task-input" placeholder="Add a new task...">
+      <select id="priority-select">
+        <option value="low">Low 🟢</option>
+        <option value="medium">Medium 🟡</option>
+        <option value="high">High 🔴</option>
+      </select>
+      <button id="add-task-btn">Add</button>
+    </div>
+    
+    <ul id="task-list"></ul>
+  </div>
+
+  <script>
+
+    // script.js
+
+const taskInput = document.getElementById('task-input');
+const addTaskBtn = document.getElementById('add-task-btn');
+const taskList = document.getElementById('task-list');
+const themeToggle = document.getElementById('theme-toggle');
+const prioritySelect = document.getElementById('priority-select');
+
+// Load tasks and theme
+document.addEventListener('DOMContentLoaded', () => {
+  loadTasks();
+  loadTheme();
+});
+
+// Add task
+addTaskBtn.addEventListener('click', () => {
+  const taskText = taskInput.value.trim();
+  const priority = prioritySelect.value;
+  if(taskText !== '') {
+    addTask(taskText, priority);
+    taskInput.value = '';
+    saveTasks();
+  }
+});
+
+// Add task with Enter key
+taskInput.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') addTaskBtn.click();
+});
+
+// Add a task element
+function addTask(taskText, priority = 'low', completed = false) {
+  const li = document.createElement('li');
+  li.classList.add(priority);
+
+  // Checkbox
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.checked = completed;
+  checkbox.addEventListener('change', () => {
+    li.classList.toggle('completed');
+    saveTasks();
+  });
+
+  // Task text
+  const span = document.createElement('span');
+  span.textContent = taskText;
+
+  // Delete button
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = 'Delete';
+  deleteBtn.className = 'delete-btn';
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    li.remove();
+    saveTasks();
+  });
+
+  li.appendChild(checkbox);
+  li.appendChild(span);
+  li.appendChild(deleteBtn);
+
+  if(completed) li.classList.add('completed');
+
+  taskList.appendChild(li);
+}
+
+// Save tasks
+function saveTasks() {
+  const tasks = [];
+  taskList.querySelectorAll('li').forEach(li => {
+    tasks.push({
+      text: li.querySelector('span').textContent,
+      completed: li.querySelector('input[type="checkbox"]').checked,
+      priority: li.classList.contains('high') ? 'high' :
+                li.classList.contains('medium') ? 'medium' : 'low'
+    });
+  });
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Load tasks
+function loadTasks() {
+  const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  tasks.forEach(task => addTask(task.text, task.priority, task.completed));
+}
+
+// Theme toggle
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  saveTheme();
+});
+
+function saveTheme() {
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+function loadTheme() {
+  const theme = localStorage.getItem('theme') || 'light';
+  if(theme === 'dark') document.body.classList.add('dark');
+}
+
+
+  </script>
+</body>
+</html>
